@@ -54,10 +54,16 @@ public class UserQueries {
                 result -> {
                     result.next();
                     userInfoResponse.put("id", result.getInt("userID"));
-                    userInfoResponse.put("about", result.getString("about"));
                     userInfoResponse.put("isAnonymous", result.getBoolean("isAnonymous"));
-                    userInfoResponse.put("name", result.getString("name"));
-                    userInfoResponse.put("username", result.getString("username"));
+                    if (userInfoResponse.get("isAnonymous").asBoolean()) {
+                        userInfoResponse.put("about", (byte[]) null);
+                        userInfoResponse.put("name", (byte[]) null);
+                        userInfoResponse.put("username", (byte[]) null);
+                    } else {
+                        userInfoResponse.put("about", result.getString("about"));
+                        userInfoResponse.put("name", result.getString("name"));
+                        userInfoResponse.put("username", result.getString("username"));
+                    }
                     userInfoResponse.put("email", result.getString("email"));
 
                 });
@@ -161,7 +167,6 @@ public class UserQueries {
 
         if (limit != null) query.append("LIMIT ").append(limit);
 
-        System.out.println(query.toString());
         Database.select(query.toString(),
                 result -> {
                     while (result.next()) {
@@ -215,6 +220,13 @@ public class UserQueries {
                                 });
 
                         userInfoResponse.set("subscriptions", subscriptions);
+
+                        if (userInfoResponse.get("isAnonymous").asBoolean()) {
+                            userInfoResponse.put("about", (byte[]) null);
+                            userInfoResponse.put("name", (byte[]) null);
+                            userInfoResponse.put("username", (byte[]) null);
+                        }
+
                         userList.add(userInfoResponse);
                     }
 

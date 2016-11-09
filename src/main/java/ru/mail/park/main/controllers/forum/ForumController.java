@@ -117,7 +117,7 @@ public class ForumController extends Controller {
             response.put("code", 0);
             response.set("response", postList);
 
-            System.out.println(mapper.writeValueAsString(response));
+            //System.out.println(mapper.writeValueAsString(response));
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {
@@ -159,7 +159,7 @@ public class ForumController extends Controller {
             response.put("code", 0);
             response.set("response", postList);
 
-            System.out.println(mapper.writeValueAsString(response));
+            //System.out.println(mapper.writeValueAsString(response));
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {
@@ -200,7 +200,7 @@ public class ForumController extends Controller {
             response.put("code", 0);
             response.set("response", userList);
 
-            System.out.println(mapper.writeValueAsString(response));
+            //System.out.println(mapper.writeValueAsString(response));
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {

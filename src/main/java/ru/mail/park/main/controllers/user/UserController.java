@@ -35,6 +35,12 @@ public class UserController extends Controller {
                     ErrorCodes.codeToJson(ErrorCodes.INCORRECT_REQUEST));
         }
 
+        if (body.isAnonymous()) {
+            body.setName("anon");
+            body.setUsername("anon");
+            body.setAbout("anon");
+        }
+
         try {
             body.setId(Database.update(UserQueries.createUserQuery(body)));
 
@@ -61,7 +67,7 @@ public class UserController extends Controller {
             response.put("code", 0);
             response.set("response", userInfo);
 
-            System.out.println(mapper.writeValueAsString(response));
+            //System.out.println(mapper.writeValueAsString(response));
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {
@@ -95,7 +101,7 @@ public class UserController extends Controller {
             response.put("code", 0);
             response.set("response", userInfo);
 
-            System.out.println(mapper.writeValueAsString(response));
+            //System.out.println(mapper.writeValueAsString(response));
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {
@@ -136,7 +142,7 @@ public class UserController extends Controller {
             response.put("code", 0);
             response.set("response", userList);
 
-            System.out.println(mapper.writeValueAsString(response));
+            //System.out.println(mapper.writeValueAsString(response));
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {
@@ -178,7 +184,7 @@ public class UserController extends Controller {
             response.put("code", 0);
             response.set("response", userList);
 
-            System.out.println(mapper.writeValueAsString(response));
+            //System.out.println(mapper.writeValueAsString(response));
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {
@@ -220,7 +226,7 @@ public class UserController extends Controller {
             response.put("code", 0);
             response.set("response", userList);
 
-            System.out.println(mapper.writeValueAsString(response));
+            //System.out.println(mapper.writeValueAsString(response));
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {
@@ -255,7 +261,7 @@ public class UserController extends Controller {
             response.put("code", 0);
             response.set("response", userInfo);
 
-            System.out.println(mapper.writeValueAsString(response));
+            //System.out.println(mapper.writeValueAsString(response));
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {
@@ -289,7 +295,7 @@ public class UserController extends Controller {
             response.put("code", 0);
             response.set("response", userInfo);
 
-            System.out.println(mapper.writeValueAsString(response));
+            //System.out.println(mapper.writeValueAsString(response));
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {

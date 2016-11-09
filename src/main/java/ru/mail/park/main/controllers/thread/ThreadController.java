@@ -81,16 +81,21 @@ public class ThreadController extends Controller {
             if (related.contains("forum")) threadInfo.set("forum",
                     ForumQueries.getForumInfoByShortName(threadInfo.get("forum").asText(), false));
 
+            if(related.contains("thread")) {
+                return ResponseEntity.ok().body(
+                        ErrorCodes.codeToJson(ErrorCodes.INCORRECT_REQUEST));
+            }
             response.put("code", 0);
             response.set("response", threadInfo);
             //System.out.println(mapper.writeValueAsString(response));
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
         } catch (JsonProcessingException ex) {
+            ex.printStackTrace();
             System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
@@ -129,7 +134,7 @@ public class ThreadController extends Controller {
             response.put("code", 0);
             response.set("response", postList);
 
-            System.out.println(mapper.writeValueAsString(response));
+            //System.out.println(mapper.writeValueAsString(response));
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {
@@ -244,7 +249,7 @@ public class ThreadController extends Controller {
             response.put("code", 0);
             response.set("response", postList);
 
-            System.out.println(mapper.writeValueAsString(response));
+            //System.out.println(mapper.writeValueAsString(response));
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {

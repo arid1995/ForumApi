@@ -24,6 +24,6 @@ public class ErrorCodes {
     }
 
     public static String codeToJson(int errorCode) {
-        return "{\"code\":\"" + errorCode + "\",\"response\":\"" + getErrorMessage(errorCode) + "\"}";
+        return "{\"code\":" + errorCode + ",\"response\":\"" + getErrorMessage(errorCode) + "\"}";
     }
 }

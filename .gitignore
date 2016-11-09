@@ -1,5 +1,4 @@
 .idea
 *.iml
 target
-technopark-db-api-master
-*.py
+me_httperf_scenario

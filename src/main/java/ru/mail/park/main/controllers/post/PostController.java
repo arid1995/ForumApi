@@ -65,7 +65,7 @@ public class PostController extends Controller {
 
             Database.update("UPDATE posts SET path='" + parentPath + currentPath +
                     "' WHERE postID="+body.getId());
-            System.out.println(body.responsify());
+            //System.out.println(body.responsify());
 
             return ResponseEntity.ok().body(body.responsify());
         } catch (SQLException ex) {
@@ -151,7 +151,7 @@ public class PostController extends Controller {
             response.put("code", 0);
             response.set("response", postList);
 
-            System.out.println(mapper.writeValueAsString(response));
+            //System.out.println(mapper.writeValueAsString(response));
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {

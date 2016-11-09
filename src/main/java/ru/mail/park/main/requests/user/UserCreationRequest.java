@@ -10,13 +10,8 @@ import javax.validation.constraints.NotNull;
  */
 public class UserCreationRequest extends Request {
 
-    @NotNull
     private String username;
-
-    @NotNull
     private String about;
-
-    @NotNull
     private String name;
 
     @NotNull
