@@ -65,7 +65,6 @@ public class UserQueries {
                         userInfoResponse.put("username", result.getString("username"));
                     }
                     userInfoResponse.put("email", result.getString("email"));
-
                 });
 
         //getting followers

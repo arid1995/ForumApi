@@ -1,7 +1,5 @@
 package ru.mail.park.main.database;
 
-import sun.plugin2.main.server.ResultHandler;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
