@@ -44,7 +44,7 @@ public class ThreadController extends Controller {
 
             return ResponseEntity.ok().body(body.responsify());
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
         }
@@ -91,11 +91,10 @@ public class ThreadController extends Controller {
 
             return ResponseEntity.ok().body(mapper.writeValueAsString(response));
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
         } catch (JsonProcessingException ex) {
-            ex.printStackTrace();
             System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
@@ -161,6 +160,7 @@ public class ThreadController extends Controller {
             Database.update(query);
             return ResponseEntity.ok().body(body.responsify());
         } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
         }
@@ -179,6 +179,7 @@ public class ThreadController extends Controller {
             Database.update(query);
             return ResponseEntity.ok().body(body.responsify());
         } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
         }
@@ -199,7 +200,7 @@ public class ThreadController extends Controller {
             Database.update(threadRemovalQuery);
             return ResponseEntity.ok().body(body.responsify());
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
         }
@@ -220,6 +221,7 @@ public class ThreadController extends Controller {
             Database.update(relatedPostsRestoreQuery);
             return ResponseEntity.ok().body(body.responsify());
         } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
         }
@@ -277,6 +279,7 @@ public class ThreadController extends Controller {
             Database.update(query);
             return ResponseEntity.ok().body(body.responsify());
         } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
         }
@@ -296,6 +299,7 @@ public class ThreadController extends Controller {
             Database.update(query);
             return ResponseEntity.ok().body(body.responsify());
         } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
         }
@@ -315,6 +319,7 @@ public class ThreadController extends Controller {
             Database.update(query);
             return ResponseEntity.ok().body(body.responsify());
         } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
         }

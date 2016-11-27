@@ -20,10 +20,11 @@ import java.util.Map;
 public class ForumQueries {
 
     public static String createForumQuery(ForumCreationRequest forumCreationRequest, int userID) {
-        return "INSERT INTO forums (name, short_name, userID) VALUES ('" +
+        return "INSERT INTO forums (name, short_name, userID, userEmail) VALUES ('" +
                 forumCreationRequest.getName() + "', '" +
                 forumCreationRequest.getShort_name() + "', " +
-                userID + ')';
+                userID + ", '" +
+                forumCreationRequest.getUser() + "')";
     }
 
     public static Integer getForumIdByShortName(String shortName) throws SQLException {
@@ -31,14 +32,6 @@ public class ForumQueries {
                 result -> {
                     result.next();
                     return result.getInt("forumID");
-                });
-    }
-
-    public static String getShortNameByForumId (int id) throws SQLException {
-        return Database.select("SELECT short_name FROM forums WHERE forumID=" + id,
-                result -> {
-                    result.next();
-                    return result.getString("short_name");
                 });
     }
 

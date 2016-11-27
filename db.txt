@@ -20,6 +20,9 @@ CREATE TABLE IF NOT EXISTS forums (
   name VARCHAR(255) NOT NULL ,
   short_name VARCHAR(255) NOT NULL,
   userID INT NOT NULL,
+
+  userEmail VARCHAR(255) NOT NULL,
+
   PRIMARY KEY (forumID),
   CONSTRAINT fk_forum_user FOREIGN KEY (userID)
     REFERENCES users (userID)
@@ -36,6 +39,9 @@ CREATE TABLE IF NOT EXISTS threads (
   creationDate DATETIME NOT NULL,
   message MEDIUMTEXT NOT NULL,
   slug VARCHAR(255),
+
+  forumShort_name VARCHAR(255) NOT NULL,
+  userEmail VARCHAR(255) NOT NULL,
 
   isDeleted BOOL DEFAULT FALSE,
   likes INT NOT NULL DEFAULT 0,
@@ -59,6 +65,9 @@ CREATE TABLE IF NOT EXISTS posts (
   message MEDIUMTEXT NOT NULL,
   userID INT NOT NULL,
   forumID INT NOT NULL,
+
+  forumShort_name VARCHAR(255) NOT NULL,
+  userEmail VARCHAR(255) NOT NULL,
 
   parentPostID INT DEFAULT NULL,
   path VARCHAR(1024) NOT NULL DEFAULT '',
@@ -185,3 +194,18 @@ FOR EACH ROW
     WHERE counters.counterName = 'forums';
   END;//
 DELIMITER ;
+
+CREATE INDEX forum_shortName ON forums(short_name, forumID, name, userEmail, userID);
+
+CREATE INDEX post_date_thread ON posts(creationDate, threadID);
+
+CREATE INDEX post_date_forum_user ON posts(creationDate, forumID, userID);
+
+CREATE INDEX post_user ON posts(userID);
+
+CREATE INDEX thread_date_user ON threads(creationDate, userID);
+
+CREATE INDEX thread_date_forum ON threads(creationDate, forumID);
+
+CREATE INDEX user_email ON users(email, userID);
+

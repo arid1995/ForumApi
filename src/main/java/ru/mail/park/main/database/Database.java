@@ -23,6 +23,8 @@ public class Database {
         dataSource.setJdbcUrl(Credentials.HOST);
         dataSource.setUser(Credentials.USER);
         dataSource.setPassword(Credentials.PASSWORD);
+        dataSource.setAcquireRetryAttempts(0);
+        dataSource.setAcquireIncrement(5);
     }
 
     public static <T> T select(String query, TResultCallback<T> callback) throws SQLException {

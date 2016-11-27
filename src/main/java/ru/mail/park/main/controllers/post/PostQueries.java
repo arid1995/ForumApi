@@ -25,13 +25,15 @@ public class PostQueries {
 
     public static String createPostQuery(PostCreationRequest postCreationRequest, int threadId,
                                          int userId, int forumId, Integer parentId) {
-        return "INSERT INTO posts (creationDate, threadID, message, userID, forumID, parentPostID, " +
-                "isApproved, isHighlighted, isEdited, isSpam, isDeleted) VALUES('" +
+        return "INSERT INTO posts (creationDate, threadID, message, userID, userEmail, forumID, forumShort_name, " +
+                " parentPostID, isApproved, isHighlighted, isEdited, isSpam, isDeleted) VALUES('" +
                 postCreationRequest.getDate() + "', " +
                 threadId +  ", '" +
                 postCreationRequest.getMessage() + "', " +
-                userId + ", " +
-                forumId + ", " +
+                userId + ", '" +
+                postCreationRequest.getUser() + "', " +
+                forumId + ", '" +
+                postCreationRequest.getForum() + "', " +
                 ((parentId == null) ? "NULL" : parentId) + ", " +
                 (postCreationRequest.isApproved() ? 1 : 0) + ", " +
                 (postCreationRequest.isHighlighted() ? 1 : 0) + ", " +
@@ -39,7 +41,6 @@ public class PostQueries {
                 (postCreationRequest.isSpam() ? 1 : 0) + ", " +
                 (postCreationRequest.isDeleted() ? 1 : 0) +
                 ')';
-
     };
 
     public static Integer getPostById(int postId) {
@@ -55,11 +56,12 @@ public class PostQueries {
         }
     }
 
-    private static void fillPostFromTable(ResultSet result, ObjectNode postInfo,
-                                          Map<String, Integer> ids) throws SQLException {
+    private static void fillPostFromTable(ResultSet result, ObjectNode postInfo) throws SQLException {
         postInfo.put("date", result.getString("creationDate").replace(".0", ""));
         postInfo.put("dislikes", result.getInt("dislikes"));
         postInfo.put("id", result.getInt("postID"));
+        postInfo.put("user", result.getString("userEmail"));
+        postInfo.put("forum", result.getString("forumShort_name"));
         postInfo.put("isApproved", result.getBoolean("isApproved"));
         postInfo.put("isDeleted", result.getBoolean("isDeleted"));
         postInfo.put("isEdited", result.getBoolean("isEdited"));
@@ -74,9 +76,6 @@ public class PostQueries {
         postInfo.put("parent", parentId);
         postInfo.put("points", postInfo.get("likes").asInt() - postInfo.get("dislikes").asInt());
         postInfo.put("thread", result.getInt("threadID"));
-
-        ids.put("forumID", result.getInt("forumID"));
-        ids.put("userID", result.getInt("userID"));
     }
 
     public static ObjectNode getPostInfoById(int postId) throws SQLException {
@@ -84,16 +83,11 @@ public class PostQueries {
 
         final ObjectNode postInfo = mapper.createObjectNode();
 
-        final Map<String, Integer> ids = new HashMap<String, Integer>();
-
         Database.select("SELECT * FROM posts WHERE postID=" + postId,
                 result -> {
                     result.next();
-                    PostQueries.fillPostFromTable(result, postInfo, ids);
+                    PostQueries.fillPostFromTable(result, postInfo);
                 });
-
-        postInfo.put("user", UserQueries.getEmailByUserId(ids.get("userID")));
-        postInfo.put("forum", ForumQueries.getShortNameByForumId(ids.get("forumID")));
 
         return postInfo;
     }
@@ -101,7 +95,7 @@ public class PostQueries {
     //In order to display by parents limit
     private static void getRootPostPaths(int threadId,
                                        int limit, StringBuilder rootPostPaths, String order) throws SQLException {
-        Database.select("SELECT DISTINCT SUBSTRING_INDEX(posts.path,'/',2) AS root FROM posts " +
+        Database.select("SELECT DISTINCT SUBSTRING_INDEX(posts.path,'/',2) AS root FROM posts " +//TODO: Think about it!
                         "WHERE threadID=" + threadId + " ORDER BY root " + order + ' ' +
                         "LIMIT " + limit,
                 result -> {
@@ -137,7 +131,7 @@ public class PostQueries {
 
         StringBuilder query = new StringBuilder();
         query.append("SELECT SUBSTRING_INDEX(posts.path,'/',2) AS root, posts.* FROM posts ");
-        query.append("WHERE ");
+        query.append("WHERE ");//TODO: Might have missed something
 
         if (startDate != null && !startDate.isEmpty()) {
             query.append("posts.creationDate >='").append(startDate).append("' AND ");
@@ -171,10 +165,7 @@ public class PostQueries {
                     while(result.next()) {
                         final ObjectNode postInfo = mapper.createObjectNode();
 
-                        PostQueries.fillPostFromTable(result, postInfo, ids);
-                        //FIXME: SLOW!!!
-                        postInfo.put("user", UserQueries.getEmailByUserId(ids.get("userID")));
-                        postInfo.put("forum", ForumQueries.getShortNameByForumId(ids.get("forumID")));
+                        PostQueries.fillPostFromTable(result, postInfo);
 
                         if (related != null) {
                             insertRelatedStuff(postInfo, related);
@@ -220,10 +211,7 @@ public class PostQueries {
             while(result.next()) {
                 final ObjectNode postInfo = mapper.createObjectNode();
 
-                PostQueries.fillPostFromTable(result, postInfo, ids);
-                //FIXME: SLOW!!!
-                postInfo.put("user", UserQueries.getEmailByUserId(ids.get("userID")));
-                postInfo.put("forum", ForumQueries.getShortNameByForumId(ids.get("forumID")));
+                PostQueries.fillPostFromTable(result, postInfo);
 
                 if (related != null) {
                     insertRelatedStuff(postInfo, related);

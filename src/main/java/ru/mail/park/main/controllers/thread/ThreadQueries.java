@@ -23,9 +23,12 @@ import java.util.Map;
 public class ThreadQueries {
 
     public static String createThreadQuery(ThreadCreationRequest threadCreationRequest, int userId, int forumId) {
-        return "INSERT INTO threads (forumID, userID, title, isClosed, creationDate, message, slug, isDeleted) VALUES ("+
-                forumId + ", " +
+        return "INSERT INTO threads (forumID, forumShort_name, userID, userEmail, title, isClosed, " +
+                "creationDate, message, slug, isDeleted) VALUES ("+
+                forumId + ", '" +
+                threadCreationRequest.getForum() + "', " +
                 userId + ", '" +
+                threadCreationRequest.getUser() + "', '" +
                 threadCreationRequest.getTitle() + "', " +
                 (threadCreationRequest.isClosed() ? 1 : 0) + ", '" +
                 threadCreationRequest.getDate() + "', '" +
@@ -35,11 +38,12 @@ public class ThreadQueries {
                 ')';
     }
 
-    private static void fillThreadFromTable(ResultSet result, ObjectNode threadInfo,
-                                           Map<String, Integer> ids) throws SQLException {
+    private static void fillThreadFromTable(ResultSet result, ObjectNode threadInfo) throws SQLException {
         threadInfo.put("date", result.getString("creationDate").replace(".0", ""));
         threadInfo.put("dislikes", result.getInt("dislikes"));
         threadInfo.put("id", result.getInt("threadID"));
+        threadInfo.put("user", result.getString("userEmail"));
+        threadInfo.put("forum", result.getString("forumShort_name"));
         threadInfo.put("isClosed", result.getBoolean("isClosed"));
         threadInfo.put("isDeleted", result.getBoolean("isDeleted"));
         threadInfo.put("likes", result.getInt("likes"));
@@ -49,9 +53,6 @@ public class ThreadQueries {
         threadInfo.put("posts", result.getInt("postCount"));
         threadInfo.put("slug", result.getString("slug"));
         threadInfo.put("title", result.getString("title"));
-
-        ids.put("forumID", result.getInt("forumID"));
-        ids.put("userID", result.getInt("userID"));
     }
 
     public static ObjectNode getThreadInfoById(int threadId) throws SQLException {
@@ -64,11 +65,8 @@ public class ThreadQueries {
         Database.select("SELECT * FROM threads WHERE threadID=" + threadId,
                 result -> {
                     result.next();
-                    fillThreadFromTable(result, threadInfo, ids);
+                    fillThreadFromTable(result, threadInfo);
                 });
-
-        threadInfo.put("user", UserQueries.getEmailByUserId(ids.get("userID")));
-        threadInfo.put("forum", ForumQueries.getShortNameByForumId(ids.get("forumID")));
 
         return threadInfo;
     }
@@ -120,10 +118,7 @@ public class ThreadQueries {
             while(result.next()) {
                 final ObjectNode threadInfo = mapper.createObjectNode();
 
-                ThreadQueries.fillThreadFromTable(result, threadInfo, ids);
-                //FIXME: SLOW!!!
-                threadInfo.put("user", UserQueries.getEmailByUserId(ids.get("userID")));
-                threadInfo.put("forum", ForumQueries.getShortNameByForumId(ids.get("forumID")));
+                ThreadQueries.fillThreadFromTable(result, threadInfo);
 
                 if(related != null) {
                     ThreadQueries.insertRelatedStuff(threadInfo, related);

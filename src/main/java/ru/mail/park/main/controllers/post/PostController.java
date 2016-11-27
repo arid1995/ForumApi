@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * Created by farid on 12.10.16.
  */
-@SuppressWarnings("OverlyComplexBooleanExpression")
+@SuppressWarnings({"OverlyComplexBooleanExpression", "Duplicates"})
 @RestController
 public class PostController extends Controller {
 
@@ -69,7 +69,7 @@ public class PostController extends Controller {
 
             return ResponseEntity.ok().body(body.responsify());
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND)
             );
@@ -178,6 +178,7 @@ public class PostController extends Controller {
             Database.update(query);
             return ResponseEntity.ok().body(body.responsify());
         } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
         }
@@ -196,6 +197,7 @@ public class PostController extends Controller {
             Database.update(query);
             return ResponseEntity.ok().body(body.responsify());
         } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
         }
@@ -214,6 +216,7 @@ public class PostController extends Controller {
             Database.update(query);
             return ResponseEntity.ok().body(body.responsify());
         } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
         }
@@ -232,6 +235,7 @@ public class PostController extends Controller {
             Database.update(query);
             return ResponseEntity.ok().body(body.responsify());
         } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
             return ResponseEntity.ok().body(
                     ErrorCodes.codeToJson(ErrorCodes.OBJECT_NOT_FOUND));
         }
