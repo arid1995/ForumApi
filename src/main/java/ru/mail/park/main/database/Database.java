@@ -1,6 +1,7 @@
 package ru.mail.park.main.database;
 
 import com.mchange.v2.c3p0.*;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.beans.PropertyVetoException;
 import java.sql.*;
@@ -12,6 +13,8 @@ import java.sql.*;
 public class Database {
 
     private static ComboPooledDataSource dataSource;
+    //private static BasicDataSource dataSource;
+
 
     static {
         dataSource = new ComboPooledDataSource();
@@ -25,6 +28,12 @@ public class Database {
         dataSource.setPassword(Credentials.PASSWORD);
         dataSource.setAcquireRetryAttempts(0);
         dataSource.setAcquireIncrement(5);
+        dataSource.setMaxPoolSize(50);
+        /*dataSource = new BasicDataSource();
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setUrl(Credentials.HOST);
+        dataSource.setPassword(Credentials.PASSWORD);
+        dataSource.setUsername(Credentials.USER);*/
     }
 
     public static <T> T select(String query, TResultCallback<T> callback) throws SQLException {

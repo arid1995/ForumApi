@@ -15,7 +15,7 @@ sys.path.append('../lib')
 import tools
 
 CONFIG_PATH = 'test.conf'
-settings = tools.Configuration(CONFIG_PATH).get_section('perf_test_prod')
+settings = tools.Configuration(CONFIG_PATH).get_section('perf_test')
 
 class TestLog(object):
     def __init__(self, verbose=False):

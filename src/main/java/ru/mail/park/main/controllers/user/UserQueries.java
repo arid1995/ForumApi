@@ -119,7 +119,7 @@ public class UserQueries {
         return "INSERT INTO followers (followerID, followeeID) VALUES(" + followerId + ',' + followeeId + ')';
     }
 
-    private static void getPostedUsersIds(StringBuilder userIds, Map<String, String> userSource) throws SQLException {
+    private static String getPostedUsersIds(Map<String, String> userSource) throws SQLException {
 
         String query = "";
         if (userSource.containsKey("forum")) {
@@ -137,12 +137,7 @@ public class UserQueries {
             query = "SELECT DISTINCT followerID AS userID FROM followers WHERE followers.followeeID=" + userId;
         }
 
-        Database.select(query, result -> {
-            while (result.next()) {
-                userIds.append(result.getInt("userID")).append(',');
-            }
-            if(userIds.length() > 0) userIds.deleteCharAt(userIds.length() - 1);
-        });
+        return query;
     }
 
     public static ArrayNode getUserList (Map<String, String> userSource,
@@ -152,17 +147,17 @@ public class UserQueries {
         StringBuilder query = new StringBuilder();
 
         StringBuilder userIds = new StringBuilder();
-        UserQueries.getPostedUsersIds(userIds, userSource);
+        String userSourceQuery = UserQueries.getPostedUsersIds(userSource);
 
         ArrayNode userList = mapper.createArrayNode();
 
         if(userIds.length() == 0) return userList;
 
-        query.append("SELECT users.* FROM users WHERE userID IN (").append(userIds).append(") ");
+        query.append("SELECT users.* FROM users WHERE userID IN (").append(userSourceQuery).append(") ");
 
-        if (startId != null) query.append("AND users.userID>=").append(startId).append(' ');
+        if (startId != null) query.append("AND users.userID>=").append(userSourceQuery).append(' ');
 
-        if (order != null) query.append("ORDER BY users.name ").append(order).append(' ');
+        if (order != null) query.append("ORDER BY users.name ").append(userSourceQuery).append(' ');
 
         if (limit != null) query.append("LIMIT ").append(limit);
 
