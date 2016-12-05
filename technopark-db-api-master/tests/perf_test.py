@@ -15,7 +15,7 @@ sys.path.append('../lib')
 import tools
 
 CONFIG_PATH = 'test.conf'
-settings = tools.Configuration(CONFIG_PATH).get_section('perf_test')
+settings = tools.Configuration(CONFIG_PATH).get_section('perf_test_prod')
 
 class TestLog(object):
     def __init__(self, verbose=False):
@@ -35,7 +35,7 @@ class Facter(object):
 
     @property
     def word(self):
-        word_len = random.randint(2, 10)
+        word_len = random.randint(5, 10)
         return ''.join(random.sample(self.abc, word_len))
     
     def get_new_sentance(self, minl, maxl):

@@ -61,7 +61,7 @@ public class PostController extends Controller {
                         });
             }
 
-            final String currentPath = String.format("%08d", body.getId());
+            final String currentPath = String.format("%06d", body.getId());
 
             Database.update("UPDATE posts SET path='" + parentPath + currentPath +
                     "' WHERE postID="+body.getId());

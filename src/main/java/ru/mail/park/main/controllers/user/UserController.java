@@ -1,7 +1,6 @@
 package ru.mail.park.main.controllers.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.mail.park.main.ErrorCodes;
 import ru.mail.park.main.controllers.Controller;
 import ru.mail.park.main.controllers.post.PostQueries;
-import ru.mail.park.main.controllers.tools.ToolsQueries;
 import ru.mail.park.main.database.Database;
 import ru.mail.park.main.requests.user.UserCreationRequest;
 import ru.mail.park.main.requests.user.UserFollowRequest;

@@ -50,7 +50,7 @@ public class UserQueries {
         final ObjectNode userInfoResponse = mapper.createObjectNode();
 
         Database.select("SELECT userID, about, isAnonymous, name, username, email " +
-                "FROM users WHERE email='" + email + '\'',
+                        "FROM users WHERE email='" + email + '\'',
                 result -> {
                     result.next();
                     userInfoResponse.put("id", result.getInt("userID"));
@@ -71,7 +71,7 @@ public class UserQueries {
         final ArrayNode followers = mapper.createArrayNode();
 
         Database.select("SELECT followerID FROM followers " +
-                "WHERE followers.followeeID=" + userInfoResponse.get("id").asInt(),
+                        "WHERE followers.followeeID=" + userInfoResponse.get("id").asInt(),
                 result -> {
                     String userEmail;
                     while (result.next()) {
@@ -86,7 +86,7 @@ public class UserQueries {
         final ArrayNode followees = mapper.createArrayNode();
 
         Database.select("SELECT followeeID FROM followers " +
-                "WHERE followers.followerID=" + userInfoResponse.get("id").asInt(),
+                        "WHERE followers.followerID=" + userInfoResponse.get("id").asInt(),
                 result -> {
                     String userEmail;
                     while (result.next()) {
@@ -101,7 +101,7 @@ public class UserQueries {
         final ArrayNode subscriptions = mapper.createArrayNode();
 
         Database.select("SELECT subscriptions.threadID FROM subscriptions " +
-                "WHERE subscriptions.userID=" + userInfoResponse.get("id").asInt(),
+                        "WHERE subscriptions.userID=" + userInfoResponse.get("id").asInt(),
                 result -> {
                     while (result.next()) {
                         subscriptions.add(result.getInt("threadID"));
@@ -119,7 +119,133 @@ public class UserQueries {
         return "INSERT INTO followers (followerID, followeeID) VALUES(" + followerId + ',' + followeeId + ')';
     }
 
-    private static String getPostedUsersIds(Map<String, String> userSource) throws SQLException {
+    private static String getPostedUsersIds(StringBuilder userIds, Map<String, String> userSource) throws SQLException {
+
+
+        if (userSource.containsKey("forum")) {
+            Integer forumId = ForumQueries.getForumIdByShortName(userSource.get("forum"));
+            return "SELECT DISTINCT userID FROM posts WHERE posts.forumID=" + forumId;
+        }
+
+        String query = "";
+        if (userSource.containsKey("followers")) {
+            Integer userId = UserQueries.getUserIdByEmail(userSource.get("followers"));
+            query = "SELECT DISTINCT followeeID AS userID FROM followers WHERE followers.followerID=" + userId;
+        }
+
+        if (userSource.containsKey("followees")) {
+            Integer userId = UserQueries.getUserIdByEmail(userSource.get("followees"));
+            query = "SELECT DISTINCT followerID AS userID FROM followers WHERE followers.followeeID=" + userId;
+        }
+
+        Database.select(query, result -> {
+            while (result.next()) {
+                userIds.append(result.getInt("userID")).append(',');
+            }
+            if(userIds.length() > 0) userIds.deleteCharAt(userIds.length() - 1);
+        });
+
+        return query;
+    }
+
+    public static ArrayNode getUserList (Map<String, String> userSource,
+                                         String order, Integer limit, Integer startId) throws SQLException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        StringBuilder query = new StringBuilder();
+
+        StringBuilder userIds = new StringBuilder();
+
+        String userSourceQuery = UserQueries.getPostedUsersIds(userIds, userSource);
+
+        ArrayNode userList = mapper.createArrayNode();
+
+        query.append("SELECT users.* FROM users WHERE userID IN (");
+
+        if (userSource.containsKey("forum")) {
+            query.append(userSourceQuery).append(") ");
+        } else {
+            if (userIds.length() == 0) return userList;
+            query.append(userIds);
+            query.append(") ");
+        }
+
+        if (startId != null) query.append("AND users.userID>=").append(startId).append(' ');
+
+        if (order != null) query.append("ORDER BY users.name ").append(order).append(' ');
+
+        if (limit != null) query.append("LIMIT ").append(limit);
+
+        //System.out.println(query);
+
+        Database.select(query.toString(),
+                result -> {
+                    while (result.next()) {
+                        final ObjectNode userInfoResponse = mapper.createObjectNode();
+                        userInfoResponse.put("id", result.getInt("userID"));
+                        userInfoResponse.put("about", result.getString("about"));
+                        userInfoResponse.put("isAnonymous", result.getBoolean("isAnonymous"));
+                        userInfoResponse.put("name", result.getString("name"));
+                        userInfoResponse.put("username", result.getString("username"));
+                        userInfoResponse.put("email", result.getString("email"));
+
+                        //getting followers
+                        final ArrayNode followers = mapper.createArrayNode();
+
+                        Database.select("SELECT followerID FROM followers " +
+                                        "WHERE followers.followeeID=" + userInfoResponse.get("id").asInt(),
+                                res -> {
+                                    String userEmail;
+                                    while (res.next()) {
+                                        userEmail = UserQueries.getEmailByUserId(res.getInt("followerID"));
+                                        followers.add(userEmail);
+                                    }
+                                });
+
+                        userInfoResponse.set("followers", followers);
+
+                        //getting followees
+                        final ArrayNode followees = mapper.createArrayNode();
+
+                        Database.select("SELECT followeeID FROM followers " +
+                                        "WHERE followers.followerID=" + userInfoResponse.get("id").asInt(),
+                                res -> {
+                                    String userEmail;
+                                    while (res.next()) {
+                                        userEmail = UserQueries.getEmailByUserId(res.getInt("followeeID"));
+                                        followees.add(userEmail);
+                                    }
+                                });
+
+                        userInfoResponse.set("following", followees);
+
+                        //getting subscriptions
+                        final ArrayNode subscriptions = mapper.createArrayNode();
+
+                        Database.select("SELECT subscriptions.threadID FROM subscriptions " +
+                                        "WHERE subscriptions.userID=" + userInfoResponse.get("id").asInt(),
+                                res -> {
+                                    while (res.next()) {
+                                        subscriptions.add(res.getInt("threadID"));
+                                    }
+                                });
+
+                        userInfoResponse.set("subscriptions", subscriptions);
+
+                        if (userInfoResponse.get("isAnonymous").asBoolean()) {
+                            userInfoResponse.put("about", (byte[]) null);
+                            userInfoResponse.put("name", (byte[]) null);
+                            userInfoResponse.put("username", (byte[]) null);
+                        }
+
+                        userList.add(userInfoResponse);
+                    }
+
+                });
+        return userList;
+    }
+
+    /*private static void getPostedUsersIds(StringBuilder userIds, Map<String, String> userSource) throws SQLException {
 
         String query = "";
         if (userSource.containsKey("forum")) {
@@ -137,7 +263,12 @@ public class UserQueries {
             query = "SELECT DISTINCT followerID AS userID FROM followers WHERE followers.followeeID=" + userId;
         }
 
-        return query;
+        Database.select(query, result -> {
+            while (result.next()) {
+                userIds.append(result.getInt("userID")).append(',');
+            }
+            if(userIds.length() > 0) userIds.deleteCharAt(userIds.length() - 1);
+        });
     }
 
     public static ArrayNode getUserList (Map<String, String> userSource,
@@ -147,17 +278,17 @@ public class UserQueries {
         StringBuilder query = new StringBuilder();
 
         StringBuilder userIds = new StringBuilder();
-        String userSourceQuery = UserQueries.getPostedUsersIds(userSource);
+        UserQueries.getPostedUsersIds(userIds, userSource);
 
         ArrayNode userList = mapper.createArrayNode();
 
         if(userIds.length() == 0) return userList;
 
-        query.append("SELECT users.* FROM users WHERE userID IN (").append(userSourceQuery).append(") ");
+        query.append("SELECT users.* FROM users WHERE userID IN (").append(userIds).append(") ");
 
-        if (startId != null) query.append("AND users.userID>=").append(userSourceQuery).append(' ');
+        if (startId != null) query.append("AND users.userID>=").append(startId).append(' ');
 
-        if (order != null) query.append("ORDER BY users.name ").append(userSourceQuery).append(' ');
+        if (order != null) query.append("ORDER BY users.name ").append(order).append(' ');
 
         if (limit != null) query.append("LIMIT ").append(limit);
 
@@ -226,7 +357,7 @@ public class UserQueries {
 
                 });
         return userList;
-    }
+    }*/
 
     public static String createUnfollowQuery(UserFollowRequest userFollowRequest) throws SQLException {
         Integer followerId = getUserIdByEmail(userFollowRequest.getFollower());
