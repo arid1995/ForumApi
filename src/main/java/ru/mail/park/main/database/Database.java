@@ -1,7 +1,7 @@
 package ru.mail.park.main.database;
 
 import com.mchange.v2.c3p0.*;
-import org.apache.commons.dbcp2.BasicDataSource;
+//import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.beans.PropertyVetoException;
 import java.sql.*;
@@ -27,8 +27,8 @@ public class Database {
         dataSource.setUser(Credentials.USER);
         dataSource.setPassword(Credentials.PASSWORD);
         dataSource.setAcquireRetryAttempts(0);
-        dataSource.setAcquireIncrement(5);
-        dataSource.setMaxPoolSize(50);
+        dataSource.setAcquireIncrement(3);
+        dataSource.setMaxPoolSize(20);
         /*dataSource = new BasicDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUrl(Credentials.HOST);
