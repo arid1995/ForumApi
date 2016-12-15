@@ -72,6 +72,7 @@ public class ToolsController {
         catch (SQLException ex) {
             ex.printStackTrace();
             System.out.print(ex.getMessage());
+            response.put("message", "Please wait, the database will come online any second now, try again in 3-4 seconds");
         }
         return ResponseEntity.ok().body(mapper.writeValueAsString(status));
     }
