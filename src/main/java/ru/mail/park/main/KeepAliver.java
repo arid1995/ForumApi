@@ -1,41 +1,26 @@
-package ru.mail.park.main.controllers.tools;
+package ru.mail.park.main;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 import ru.mail.park.main.database.Database;
 
 import java.sql.SQLException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
- * Created by farid on 13.10.16.
+ * Created by farid on 20.12.16.
  */
-
-@RestController
-public class ToolsController {
-
-    @RequestMapping(path = "/db/api/clear")
-    public ResponseEntity cleaDb() {
-        try {
-            Database.update("TRUNCATE TABLE users");
-            Database.update("TRUNCATE TABLE forums");
-            Database.update("TRUNCATE TABLE threads");
-            Database.update("TRUNCATE TABLE posts");
-            Database.update("TRUNCATE TABLE followers");
-            Database.update("TRUNCATE TABLE subscriptions");
-        }
-        catch (SQLException ex) {
-            ex.printStackTrace();
-            System.out.print(ex.getMessage());
-        }
-        return ResponseEntity.ok().body("{\"code\": 0, \"response\": \"OK\"}");
+@SuppressWarnings("Duplicates")
+@Service
+public class KeepAliver extends TimerTask {
+    Timer timer = new Timer();
+    KeepAliver() {
+        timer.schedule(this, 60000, 60000);
     }
 
-    @RequestMapping(path = "/db/api/status")
-    public ResponseEntity status() throws JsonProcessingException {
+    public void run() {
         ObjectMapper mapper = new ObjectMapper();
         final ObjectNode status = mapper.createObjectNode();
         status.put("code", 0);
@@ -72,8 +57,5 @@ public class ToolsController {
             System.out.print(ex.getMessage());
             response.put("message", "Please wait, the database will come online any second now, try again in 3-4 seconds");
         }
-
-        status.set("response", response);
-        return ResponseEntity.ok().body(mapper.writeValueAsString(status));
     }
 }
