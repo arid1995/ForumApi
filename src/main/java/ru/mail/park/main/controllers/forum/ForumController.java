@@ -174,7 +174,7 @@ public class ForumController extends Controller {
     }
 
     @RequestMapping(path = "db/api/forum/listUsers/", method = RequestMethod.GET)
-    public ResponseEntity getUserList(@RequestParam(value = "since", required = false) Integer startId,
+    public ResponseEntity getUserList(@RequestParam(value = "since_id", required = false) Integer startId,
                                         @RequestParam(value = "limit", required = false) Integer limit,
                                         @RequestParam(value = "order", required = false) String order,
                                         @RequestParam(value = "forum", required = false) String forumShortName) {
